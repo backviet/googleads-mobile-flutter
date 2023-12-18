@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 import 'consent_form_impl.dart';
@@ -33,6 +35,9 @@ class UserMessagingCodec extends StandardMessageCodec {
       buffer.putUint8(_valueConsentDebugSettings);
       writeValue(buffer, value.debugGeography?.index);
       writeValue(buffer, value.testIdentifiers);
+      if (Platform.isAndroid) {
+        writeValue(buffer, value.isForceTesting);
+      }
     } else if (value is ConsentFormImpl) {
       buffer.putUint8(_valueConsentForm);
       writeValue(buffer, value.platformHash);
@@ -59,8 +64,12 @@ class UserMessagingCodec extends StandardMessageCodec {
         }
         List<String>? testIds =
             readValueOfType(buffer.getUint8(), buffer)?.cast<String>();
+        bool? isForceTesting = Platform.isAndroid ? readValueOfType(buffer.getUint8(), buffer) : null;
         return ConsentDebugSettings(
-            debugGeography: debugGeography, testIdentifiers: testIds);
+          debugGeography: debugGeography,
+          testIdentifiers: testIds,
+          isForceTesting: isForceTesting,
+        );
       case _valueConsentForm:
         final int hashCode = readValueOfType(buffer.getUint8(), buffer);
         return ConsentFormImpl(hashCode);

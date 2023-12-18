@@ -15,8 +15,11 @@
 package io.flutter.plugins.googlemobileads.usermessagingplatform;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
+
 import com.google.android.ump.ConsentDebugSettings;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -27,10 +30,18 @@ class ConsentDebugSettingsWrapper {
 
   @Nullable private final List<String> testIdentifiers;
 
+  @Nullable private final Boolean isForceTesting;
+
   ConsentDebugSettingsWrapper(
-      @Nullable Integer debugGeography, @Nullable List<String> testIdentifiers) {
+          @Nullable Integer debugGeography, @Nullable List<String> testIdentifiers, @Nullable Boolean isForceTesting) {
     this.debugGeography = debugGeography;
     this.testIdentifiers = testIdentifiers;
+    this.isForceTesting = isForceTesting;
+  }
+
+  @Nullable
+  Boolean isForceTesting() {
+    return this.isForceTesting;
   }
 
   @Nullable
@@ -48,11 +59,15 @@ class ConsentDebugSettingsWrapper {
     ConsentDebugSettings.Builder builder = new ConsentDebugSettings.Builder(context);
     if (debugGeography != null) {
       builder.setDebugGeography(debugGeography);
+      builder.setForceTesting(true);
     }
     if (testIdentifiers != null) {
       for (String testIdentifier : testIdentifiers) {
         builder.addTestDeviceHashedId(testIdentifier);
       }
+    }
+    if (isForceTesting != null) {
+      builder.setForceTesting(isForceTesting);
     }
     return builder.build();
   }
@@ -67,11 +82,12 @@ class ConsentDebugSettingsWrapper {
 
     ConsentDebugSettingsWrapper other = (ConsentDebugSettingsWrapper) obj;
     return Objects.equals(debugGeography, other.getDebugGeography())
-        && Objects.equals(testIdentifiers, other.getTestIdentifiers());
+            && Objects.equals(testIdentifiers, other.getTestIdentifiers())
+            && Objects.equals(isForceTesting, other.isForceTesting());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(debugGeography, testIdentifiers);
+    return Objects.hash(debugGeography, testIdentifiers, isForceTesting);
   }
 }

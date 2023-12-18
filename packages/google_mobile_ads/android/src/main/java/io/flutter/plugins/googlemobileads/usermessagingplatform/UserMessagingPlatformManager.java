@@ -98,6 +98,28 @@ public class UserMessagingPlatformManager implements MethodCallHandler {
           result.success(getConsentInformation().getConsentStatus());
           break;
         }
+      case "ConsentInformation#canRequestAds": {
+        result.success(getConsentInformation().canRequestAds());
+        break;
+      }
+      case "ConsentInformation#showPrivacyOptionsForm": {
+        if (activity == null) {
+          result.error(
+                  INTERNAL_ERROR_CODE,
+                  "ConsentInformation#showPrivacyOptionsForm called before plugin has been registered to an activity.",
+                  null
+          );
+          break;
+        }
+        UserMessagingPlatform.showPrivacyOptionsForm(activity, formError -> {
+          if (formError == null) {
+            result.success(null);
+          } else {
+            result.error(Integer.toString(formError.getErrorCode()), formError.getMessage(), null);
+          }
+        });
+        break;
+      }
       case "ConsentInformation#requestConsentInfoUpdate":
         {
           if (activity == null) {
@@ -143,11 +165,25 @@ public class UserMessagingPlatformManager implements MethodCallHandler {
             },
             new OnConsentFormLoadFailureListener() {
               @Override
-              public void onConsentFormLoadFailure(FormError formError) {
+              public void onConsentFormLoadFailure(@NonNull FormError formError) {
                 result.error(
                     Integer.toString(formError.getErrorCode()), formError.getMessage(), null);
               }
             });
+        break;
+      case "UserMessagingPlatform#loadAndShowConsentFormIfRequired":
+        UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                activity,
+                new OnConsentFormDismissedListener() {
+                  @Override
+                  public void onConsentFormDismissed(@Nullable FormError formError) {
+                    if (formError != null) {
+                      result.error(Integer.toString(formError.getErrorCode()), formError.getMessage(), null);
+                    } else {
+                      result.success(null);
+                    }
+                  }
+                });
         break;
       case "ConsentInformation#isConsentFormAvailable":
         {

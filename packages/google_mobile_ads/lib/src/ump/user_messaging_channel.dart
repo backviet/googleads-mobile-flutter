@@ -61,6 +61,26 @@ class UserMessagingChannel {
         .invokeMethod<bool>('ConsentInformation#isConsentFormAvailable'))!;
   }
 
+  /// Indicates whether the app has completed the necessary steps for gathering updated user consent.
+  /// This method returns false until requestConsentInfoUpdate is called.
+  /// Once requestConsentInfoUpdate is called, this method returns true when getConsentStatus() returns ConsentInformation.ConsentStatus.NOT_REQUIRED or ConsentInformation.ConsentStatus.OBTAINED.
+  /// Returns
+  /// true if the app has completed the necessary steps for gathering updated user consent.
+  Future<bool> canRequestAds() async {
+    return (await _methodChannel
+        .invokeMethod<bool>('ConsentInformation#canRequestAds'))!;
+  }
+
+  /// Show the consent form.
+  void showPrivacyOptionsForm(OnConsentFormDismissedListener onConsentFormDismissedListener) async {
+    try {
+      await _methodChannel.invokeMethod<FormError?>('ConsentForm#showPrivacyOptionsForm');
+      onConsentFormDismissedListener(null);
+    } on PlatformException catch (e) {
+      onConsentFormDismissedListener(_formErrorFromPlatformException(e));
+    }
+  }
+
   /// Gets the consent status.
   Future<ConsentStatus> getConsentStatus() async {
     int consentStatus = (await _methodChannel
@@ -100,6 +120,17 @@ class UserMessagingChannel {
   /// Invokes reset API,
   Future<void> reset() async {
     return _methodChannel.invokeMethod<void>('ConsentInformation#reset');
+  }
+
+  /// Loads a consent form and show it if need, calls the corresponding listener.
+  void loadAndShowConsentFormIfRequired(
+      VoidCallback successListener, OnConsentFormLoadFailureListener failureListener) async {
+    try {
+      await _methodChannel.invokeMethod<ConsentForm>('UserMessagingPlatform#loadAndShowConsentFormIfRequired');
+      successListener.call();
+    } on PlatformException catch (e) {
+      failureListener(_formErrorFromPlatformException(e));
+    }
   }
 
   /// Loads a consent form and calls the corresponding listener.

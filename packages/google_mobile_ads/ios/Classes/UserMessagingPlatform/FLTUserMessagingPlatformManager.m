@@ -57,6 +57,24 @@
     UMPConsentStatus status =
         UMPConsentInformation.sharedInstance.consentStatus;
     result([[NSNumber alloc] initWithInteger:status]);
+  } else if ([call.method
+              isEqualToString:@"ConsentInformation#canRequestAds"]) {
+    BOOL canRequestAds =
+      UMPConsentInformation.sharedInstance.canRequestAds;
+    result([[NSNumber alloc] initWithBool:canRequestAds]);
+  } else if ([call.method
+              isEqualToString:@"ConsentInformation#showPrivacyOptionsForm"]) {
+      [UMPConsentForm presentPrivacyOptionsFormFromViewController:self.rootController
+                                                completionHandler:^(NSError *_Nullable error) {
+          if ([FLTAdUtil isNull:error]) {
+              result(nil);
+          } else {
+              result([FlutterError
+                      errorWithCode:[[NSString alloc] initWithInt:error.code]
+                      message:error.localizedDescription
+                      details:error.domain]);
+          }
+      }];
   } else if ([call.method isEqualToString:
                               @"ConsentInformation#requestConsentInfoUpdate"]) {
     UMPRequestParameters *parameters = call.arguments[@"params"];
@@ -87,6 +105,21 @@
                       details:loadError.domain]);
           }
         }];
+  } else if ([call.method
+                 isEqualToString:@"UserMessagingPlatform#loadAndShowConsentFormIfRequired"]) {
+    [UMPConsentForm
+        loadAndPresentIfRequiredFromViewController:self.rootController
+                                 completionHandler:^(NSError *_Nullable loadAndPresentError) {
+                                   if (loadAndPresentError == nil)
+                                     if ([FLTAdUtil isNull:loadAndPresentError]) {
+                                       result(nil);
+                                     } else {
+                                       result([FlutterError
+                                           errorWithCode:[[NSString alloc] initWithInt:loadAndPresentError.code]
+                                                 message:loadAndPresentError.localizedDescription
+                                                 details:loadAndPresentError.domain]);
+                                     }
+                                 }];
   } else if ([call.method isEqualToString:
                               @"ConsentInformation#isConsentFormAvailable"]) {
     BOOL isAvailable = UMPConsentInformation.sharedInstance.formStatus ==
