@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:google_mobile_ads/src/ump/consent_form.dart';
+
 import 'consent_information.dart';
 import 'consent_request_parameters.dart';
 import 'user_messaging_channel.dart';
@@ -33,6 +35,16 @@ class ConsentInformationImpl extends ConsentInformation {
   @override
   Future<bool> isConsentFormAvailable() {
     return UserMessagingChannel.instance.isConsentFormAvailable();
+  }
+
+  @override
+  Future<bool> canRequestAds() {
+    return UserMessagingChannel.instance.canRequestAds();
+  }
+
+  @override
+  void showPrivacyOptionsForm(OnConsentFormDismissedListener onConsentFormDismissedListener) {
+    UserMessagingChannel.instance.showPrivacyOptionsForm(onConsentFormDismissedListener);
   }
 
   @override

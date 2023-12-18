@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:flutter/foundation.dart';
+
 import 'form_error.dart';
 import 'user_messaging_channel.dart';
 
@@ -45,5 +47,13 @@ abstract class ConsentForm {
       OnConsentFormLoadFailureListener failureListener) {
     UserMessagingChannel.instance
         .loadConsentForm(successListener, failureListener);
+  }
+  
+  /// Loads a ConsentForm.
+  ///
+  /// UMP will load the consent, check to show it if need
+  static void loadAndShowConsentFormIfRequired(
+      VoidCallback successListener, OnConsentFormLoadFailureListener failureListener) {
+    UserMessagingChannel.instance.loadAndShowConsentFormIfRequired(successListener, failureListener);
   }
 }

@@ -14,6 +14,7 @@
 
 import 'package:google_mobile_ads/src/ump/consent_information_impl.dart';
 
+import '../../google_mobile_ads.dart';
 import 'consent_request_parameters.dart';
 import 'form_error.dart';
 
@@ -48,6 +49,12 @@ abstract class ConsentInformation {
 
   /// Returns true if a ConsentForm is available, false otherwise.
   Future<bool> isConsentFormAvailable();
+
+  /// Returns true if can request ads
+  Future<bool> canRequestAds();
+
+  /// Show the consent form.
+  void showPrivacyOptionsForm(OnConsentFormDismissedListener onConsentFormDismissedListener);
 
   /// Get the user’s consent status.
   ///
