@@ -52,6 +52,7 @@ public class UserMessagingCodec extends StandardMessageCodec {
       ConsentDebugSettingsWrapper debugSettings = (ConsentDebugSettingsWrapper) value;
       writeValue(stream, debugSettings.getDebugGeography());
       writeValue(stream, debugSettings.getTestIdentifiers());
+      writeValue(stream, debugSettings.isForceTesting());
     } else if (value instanceof ConsentForm) {
       stream.write(VALUE_CONSENT_FORM);
       writeValue(stream, value.hashCode());
@@ -96,7 +97,8 @@ public class UserMessagingCodec extends StandardMessageCodec {
         {
           Integer debugGeoInt = (Integer) readValueOfType(buffer.get(), buffer);
           List<String> testIdentifiers = asList(readValueOfType(buffer.get(), buffer));
-          return new ConsentDebugSettingsWrapper(debugGeoInt, testIdentifiers);
+          Boolean isForceTesting = (Boolean) readValueOfType(buffer.get(), buffer);
+          return new ConsentDebugSettingsWrapper(debugGeoInt, testIdentifiers, isForceTesting);
         }
       case VALUE_CONSENT_FORM:
         {
