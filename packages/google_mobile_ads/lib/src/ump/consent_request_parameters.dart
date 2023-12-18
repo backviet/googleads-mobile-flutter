@@ -43,7 +43,7 @@ class ConsentRequestParameters {
 /// Debug settings to hardcode in test requests.
 class ConsentDebugSettings {
   /// Construct a [ConsentDebugSettings].
-  ConsentDebugSettings({this.debugGeography, this.testIdentifiers});
+  ConsentDebugSettings({this.debugGeography, this.testIdentifiers, this.isForceTesting});
 
   /// Debug geography for testing geography.
   DebugGeography? debugGeography;
@@ -53,11 +53,15 @@ class ConsentDebugSettings {
   /// Debug features are enabled for devices with these identifiers.
   List<String>? testIdentifiers;
 
+  /// Only using for android platform
+  bool? isForceTesting;
+
   @override
   bool operator ==(Object other) {
     return other is ConsentDebugSettings &&
         debugGeography == other.debugGeography &&
-        listEquals(testIdentifiers, other.testIdentifiers);
+        listEquals(testIdentifiers, other.testIdentifiers) &&
+        isForceTesting == other.isForceTesting;
   }
 
   @override
