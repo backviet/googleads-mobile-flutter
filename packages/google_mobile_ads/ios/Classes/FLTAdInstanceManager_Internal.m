@@ -67,6 +67,17 @@
   [_ads removeAllObjects];
 }
 
+- (void)prepareToDisplayNativeAdWithID:(NSNumber *_Nonnull)adId
+                         customOptions:(NSDictionary<NSString *, id> *_Nullable)customOptions
+                       nativeAdFactory:(NSObject<FLTNativeAdFactory> *_Nullable)nativeAdFactory {
+  FLTNativeAd * ad = (FLTNativeAd *)[self adFor:adId];
+  if (!ad) {
+    NSLog(@"Can't find ad with id: %@", adId);
+    return;
+  }
+  [ad prepareToDisplayNativeAd:customOptions nativeAdFactory:nativeAdFactory];
+}
+
 - (void)showAdWithID:(NSNumber *_Nonnull)adId {
   id<FLTAdWithoutView> ad = (id<FLTAdWithoutView>)[self adFor:adId];
 
