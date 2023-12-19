@@ -1069,6 +1069,13 @@ class NativeAd extends AdWithView {
   Future<void> load() async {
     await instanceManager.loadNativeAd(this);
   }
+
+  /// Optional options used to display the [NativeAd].
+  ///
+  /// These options are passed to the platform's `NativeAdFactory`.
+  Future<void> prepareToDisplay(Map<String, Object>? customOptions, String? factoryId) async {
+    await instanceManager.prepareToDisplayNativeAd(this, customOptions, factoryId);
+  }
 }
 
 /// A full-screen interstitial ad for the Google Mobile Ads Plugin.

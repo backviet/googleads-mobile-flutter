@@ -35,9 +35,10 @@ import java.util.Map;
 class FlutterNativeAd extends FlutterAd {
   private static final String TAG = "FlutterNativeAd";
 
+  @Nullable private NativeAd nativeAd;
   @NonNull private final AdInstanceManager manager;
   @NonNull private final String adUnitId;
-  @Nullable private final NativeAdFactory adFactory;
+  @Nullable private NativeAdFactory adFactory;
   @NonNull private final FlutterAdLoader flutterAdLoader;
   @Nullable private FlutterAdRequest request;
   @Nullable private FlutterAdManagerAdRequest adManagerRequest;
@@ -131,8 +132,8 @@ class FlutterNativeAd extends FlutterAd {
         throw new IllegalStateException("AdInstanceManager cannot be null.");
       } else if (adUnitId == null) {
         throw new IllegalStateException("AdUnitId cannot be null.");
-      } else if (adFactory == null && nativeTemplateStyle == null) {
-        throw new IllegalStateException("NativeAdFactory and nativeTemplateStyle cannot be null.");
+//      } else if (adFactory == null && nativeTemplateStyle == null) {
+//        throw new IllegalStateException("NativeAdFactory and nativeTemplateStyle cannot be null.");
       } else if (request == null && adManagerRequest == null) {
         throw new IllegalStateException("adRequest or addManagerRequest must be non-null.");
       }
@@ -240,6 +241,12 @@ class FlutterNativeAd extends FlutterAd {
   @Override
   @Nullable
   public PlatformView getPlatformView() {
+    if (nativeTemplateStyle != null) {
+      templateView = nativeTemplateStyle.asTemplateView(context);
+      templateView.setNativeAd(nativeAd);
+    } else if (adFactory != null) {
+      nativeAdView = adFactory.createNativeAd(nativeAd, customOptions);
+    }
     if (nativeAdView != null) {
       return new FlutterPlatformView(nativeAdView);
     } else if (templateView != null) {
@@ -248,19 +255,34 @@ class FlutterNativeAd extends FlutterAd {
     return null;
   }
 
-  void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
-    if (nativeTemplateStyle != null) {
-      templateView = nativeTemplateStyle.asTemplateView(context);
-      templateView.setNativeAd(nativeAd);
-    } else {
-      nativeAdView = adFactory.createNativeAd(nativeAd, customOptions);
+  void prepareToDisplayNativeAd(@Nullable Map<String, Object> customOptions, @Nullable NativeAdFactory factory) {
+    if (customOptions != null) {
+      if (this.customOptions != null) {
+        this.customOptions.putAll(customOptions);
+      } else {
+        this.customOptions = customOptions;
+      }
     }
+    if (factory != null) {
+      this.adFactory = factory;
+    }
+  }
+
+  void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+    this.nativeAd = nativeAd;
+//    if (nativeTemplateStyle != null) {
+//      templateView = nativeTemplateStyle.asTemplateView(context);
+//      templateView.setNativeAd(nativeAd);
+//    } else if (adFactory != null) {
+//      nativeAdView = adFactory.createNativeAd(nativeAd, customOptions);
+//    }
     nativeAd.setOnPaidEventListener(new FlutterPaidEventListener(manager, this));
     manager.onAdLoaded(adId, nativeAd.getResponseInfo());
   }
 
   @Override
   void dispose() {
+    nativeAd = null;
     if (nativeAdView != null) {
       nativeAdView.destroy();
       nativeAdView = null;
