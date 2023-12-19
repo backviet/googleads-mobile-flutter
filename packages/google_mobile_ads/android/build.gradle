@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdk 35
+    compileSdk 34
 
     if (project.android.hasProperty('namespace')) {
         namespace 'io.flutter.plugins.googlemobileads'
@@ -35,7 +35,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.android.gms:play-services-ads:24.1.0'
+        api 'com.google.android.gms:play-services-ads:23.6.0'
         implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
         implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
         implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
