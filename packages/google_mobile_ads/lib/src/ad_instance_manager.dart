@@ -487,8 +487,7 @@ class AdInstanceManager {
     ))!;
   }
 
-  Future<AdSize?> getAdSize(Ad ad) =>
-      instanceManager.channel.invokeMethod<AdSize>(
+  Future<AdSize?> getAdSize(Ad ad) => instanceManager.channel.invokeMethod<AdSize>(
         'getAdSize',
         <dynamic, dynamic>{'adId': adIdFor(ad)},
       );
@@ -569,6 +568,27 @@ class AdInstanceManager {
       'customOptions': ad.customOptions,
       'nativeTemplateStyle': ad.nativeTemplateStyle,
     });
+  }
+
+  /// Prepares to display the nativead (optional)
+  ///
+  /// Normaly it used to select layout of the ad.
+  Future<void> prepareToDisplayNativeAd(NativeAd ad, Map<String, Object>? customOptions, String? factoryId) {
+    final int? adId = adIdFor(ad);
+    if (adId == null) {
+      return Future<void>.value();
+    }
+
+    final passOptions = <dynamic, dynamic>{
+      'adId': adId,
+      'factoryId': factoryId,
+      'customOptions': customOptions,
+    };
+
+    return channel.invokeMethod<void>(
+      'prepareToDisplayNativeAd',
+      passOptions,
+    );
   }
 
   /// Starts loading the ad if not previously loaded.
@@ -725,8 +745,7 @@ class AdInstanceManager {
       'MobileAds#updateRequestConfiguration',
       <dynamic, dynamic>{
         'maxAdContentRating': requestConfiguration.maxAdContentRating,
-        'tagForChildDirectedTreatment':
-            requestConfiguration.tagForChildDirectedTreatment,
+        'tagForChildDirectedTreatment': requestConfiguration.tagForChildDirectedTreatment,
         'testDeviceIds': requestConfiguration.testDeviceIds,
         'tagForUnderAgeOfConsent': requestConfiguration.tagForUnderAgeOfConsent,
       },
@@ -826,8 +845,7 @@ class AdInstanceManager {
 
   int getWebViewId(WebViewController controller) {
     if (WebViewPlatform.instance is AndroidWebViewPlatform) {
-      return (controller.platform as AndroidWebViewController)
-          .webViewIdentifier;
+      return (controller.platform as AndroidWebViewController).webViewIdentifier;
     } else if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       return (controller.platform as WebKitWebViewController).webViewIdentifier;
     } else {
@@ -1256,9 +1274,7 @@ class AdMessageCodec extends StandardMessageCodec {
           primaryTextStyle: readValueOfType(buffer.getUint8(), buffer),
           secondaryTextStyle: readValueOfType(buffer.getUint8(), buffer),
           tertiaryTextStyle: readValueOfType(buffer.getUint8(), buffer),
-          cornerRadius: defaultTargetPlatform == TargetPlatform.iOS
-              ? readValueOfType(buffer.getUint8(), buffer)
-              : null,
+          cornerRadius: defaultTargetPlatform == TargetPlatform.iOS ? readValueOfType(buffer.getUint8(), buffer) : null,
         );
       case _valueNativeTemplateType:
         return TemplateType.values[readValueOfType(buffer.getUint8(), buffer)];
@@ -1429,13 +1445,9 @@ extension AdChoicesPlacementExtension on AdChoicesPlacement {
   static AdChoicesPlacement? fromInt(int? intValue) {
     switch (intValue) {
       case 0:
-        return Platform.isAndroid
-            ? AdChoicesPlacement.topLeftCorner
-            : AdChoicesPlacement.topRightCorner;
+        return Platform.isAndroid ? AdChoicesPlacement.topLeftCorner : AdChoicesPlacement.topRightCorner;
       case 1:
-        return Platform.isAndroid
-            ? AdChoicesPlacement.topRightCorner
-            : AdChoicesPlacement.topLeftCorner;
+        return Platform.isAndroid ? AdChoicesPlacement.topRightCorner : AdChoicesPlacement.topLeftCorner;
       case 2:
         return AdChoicesPlacement.bottomRightCorner;
       case 3:
