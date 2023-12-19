@@ -1074,6 +1074,7 @@
 @implementation FLTNativeAd {
   NSString *_adUnitId;
   FLTAdRequest *_adRequest;
+  GADNativeAd *_nativeAd;
   NSObject<FLTNativeAdFactory> *_nativeAdFactory;
   NSDictionary<NSString *, id> *_customOptions;
   UIView *_view;
@@ -1135,15 +1136,17 @@
 
 - (void)adLoader:(GADAdLoader *)adLoader
     didReceiveNativeAd:(GADNativeAd *)nativeAd {
+  _nativeAd = nativeAd;
+    
   // Use Nil instead of Null to fix crash with Swift integrations.
-  NSDictionary<NSString *, id> *customOptions =
-      [[NSNull null] isEqual:_customOptions] ? nil : _customOptions;
-  if ([FLTAdUtil isNotNull:_nativeTemplateStyle]) {
-    _view = [_nativeTemplateStyle getDisplayedView:nativeAd];
-  } else if ([FLTAdUtil isNotNull:_nativeAdFactory]) {
-    _view = [_nativeAdFactory createNativeAd:nativeAd
-                               customOptions:customOptions];
-  }
+//  NSDictionary<NSString *, id> *customOptions =
+//      [[NSNull null] isEqual:_customOptions] ? nil : _customOptions;
+//  if ([FLTAdUtil isNotNull:_nativeTemplateStyle]) {
+//    _view = [_nativeTemplateStyle getDisplayedView:nativeAd];
+//  } else if ([FLTAdUtil isNotNull:_nativeAdFactory]) {
+//    _view = [_nativeAdFactory createNativeAd:nativeAd
+//                               customOptions:customOptions];
+//  }
 
   nativeAd.delegate = self;
 
@@ -1164,6 +1167,28 @@
 - (void)adLoader:(GADAdLoader *)adLoader
     didFailToReceiveAdWithError:(NSError *)error {
   [manager onAdFailedToLoad:self error:error];
+}
+
+- (void)prepareToDisplayNativeAd:(NSDictionary<NSString *, id> *_Nullable)customOptions
+                 nativeAdFactory:(NSObject<FLTNativeAdFactory> *_Nullable)nativeAdFactory {
+    if ([[NSNull null] isEqual:customOptions]) {
+      // do nothing
+    } else {
+      if ([[NSNull null] isEqual:_customOptions]) {
+        _customOptions = customOptions;
+      } else {
+        NSMutableDictionary *newCustomOptions = [_customOptions mutableCopy];
+        [newCustomOptions addEntriesFromDictionary:customOptions];
+        _customOptions = [newCustomOptions copy];
+      }
+    }
+    if (nativeAdFactory != nil) {
+      _nativeAdFactory = nativeAdFactory;
+//      NSDictionary<NSString *, id> *newCustomOptions =
+//        [[NSNull null] isEqual:_customOptions] ? nil : _customOptions;
+//      _view = [_nativeAdFactory createNativeAd:_nativeAd
+//                                 customOptions:newCustomOptions];
+    }
 }
 
 #pragma mark - GADNativeAdDelegate
@@ -1190,6 +1215,15 @@
 
 #pragma mark - FlutterPlatformView
 - (UIView *)view {
+  // Use Nil instead of Null to fix crash with Swift integrations.
+  NSDictionary<NSString *, id> *customOptions =
+    [[NSNull null] isEqual:_customOptions] ? nil : _customOptions;
+  if ([FLTAdUtil isNotNull:_nativeTemplateStyle]) {
+    _view = [_nativeTemplateStyle getDisplayedView:_nativeAd];
+  } else if ([FLTAdUtil isNotNull:_nativeAdFactory]) {
+    _view = [_nativeAdFactory createNativeAd:_nativeAd
+                               customOptions:customOptions];
+  }
   return _view;
 }
 
