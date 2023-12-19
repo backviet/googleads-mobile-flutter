@@ -231,6 +231,15 @@ class AdInstanceManager {
     return true;
   }
 
+  void prepareToDisplayNativeAd(int id, @Nullable Map<String, Object> customOptions, @Nullable GoogleMobileAdsPlugin.NativeAdFactory factory) {
+    final FlutterNativeAd ad = (FlutterNativeAd) adForId(id);
+    if (ad == null) {
+      return;
+    }
+
+    ad.prepareToDisplayNativeAd(customOptions, factory);
+  }
+
   /** Invoke the method channel using the UI thread. Otherwise the message gets silently dropped. */
   private void invokeOnAdEvent(final Map<Object, Object> arguments) {
     new Handler(Looper.getMainLooper())
