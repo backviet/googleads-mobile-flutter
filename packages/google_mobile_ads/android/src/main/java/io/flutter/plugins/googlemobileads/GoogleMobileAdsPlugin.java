@@ -217,6 +217,11 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
     return null;
   }
 
+  @Nullable
+  public NativeAdFactory getNativeAdFactory(@NonNull String factoryId) {
+    return nativeAdFactories.get(factoryId);
+  }
+
   private boolean addNativeAdFactory(String factoryId, NativeAdFactory nativeAdFactory) {
     if (nativeAdFactories.containsKey(factoryId)) {
       final String errorMessage =
@@ -406,12 +411,12 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
         final String factoryId = call.argument("factoryId");
         final NativeAdFactory factory = nativeAdFactories.get(factoryId);
         final FlutterNativeTemplateStyle templateStyle = call.argument("nativeTemplateStyle");
-        if (factory == null && templateStyle == null) {
-          final String message =
-              String.format("No NativeAdFactory with id: %s or nativeTemplateStyle", factoryId);
-          result.error("NativeAdError", message, null);
-          break;
-        }
+//        if (factory == null && templateStyle == null) {
+//          final String message =
+//              String.format("No NativeAdFactory with id: %s or nativeTemplateStyle", factoryId);
+//          result.error("NativeAdError", message, null);
+//          break;
+//        }
 
         final FlutterNativeAd nativeAd =
             new FlutterNativeAd.Builder(context)
@@ -562,6 +567,16 @@ public class GoogleMobileAdsPlugin implements FlutterPlugin, ActivityAware, Meth
         break;
       case "disposeAd":
         instanceManager.disposeAd(call.<Integer>argument("adId"));
+        result.success(null);
+        break;
+      case "prepareToDisplayNativeAd":
+        final String nativeFactoryId = call.argument("factoryId");
+        final NativeAdFactory prepareFactory = nativeAdFactories.get(nativeFactoryId);
+        instanceManager.prepareToDisplayNativeAd(
+                call.<Integer>argument("adId"),
+                call.<Map<String, Object>>argument("customOptions"),
+                prepareFactory
+        );
         result.success(null);
         break;
       case "showAdWithoutView":

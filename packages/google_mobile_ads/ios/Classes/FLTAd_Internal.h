@@ -308,6 +308,8 @@
         nativeAdOptions:(FLTNativeAdOptions *_Nullable)nativeAdOptions
     nativeTemplateStyle:(FLTNativeTemplateStyle *_Nullable)nativeTemplateStyle;
 - (GADAdLoader *_Nonnull)adLoader;
+- (void)prepareToDisplayNativeAd:(NSDictionary<NSString *, id> *_Nullable)customOptions
+                 nativeAdFactory:(NSObject<FLTNativeAdFactory> *_Nullable)nativeAdFactory;
 @end
 
 @interface FLTRewardItem : NSObject
