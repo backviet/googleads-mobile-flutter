@@ -78,15 +78,17 @@
   [ad prepareToDisplayNativeAd:customOptions nativeAdFactory:nativeAdFactory];
 }
 
-- (void)showAdWithID:(NSNumber *_Nonnull)adId {
+- (BOOL)showAdWithID:(NSNumber *_Nonnull)adId {
   id<FLTAdWithoutView> ad = (id<FLTAdWithoutView>)[self adFor:adId];
 
   if (!ad) {
     NSLog(@"Can't find ad with id: %@", adId);
-    return;
+    // raise loi
+    return NO;
   }
 
   [ad show];
+  return YES;
 }
 
 - (void)onAdLoaded:(id<FLTAd> _Nonnull)ad
