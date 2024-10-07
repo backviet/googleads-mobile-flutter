@@ -511,8 +511,15 @@
     [_manager dispose:call.arguments[@"adId"]];
     result(nil);
   } else if ([call.method isEqualToString:@"showAdWithoutView"]) {
-    [_manager showAdWithID:call.arguments[@"adId"]];
-    result(nil);
+    BOOL adShown = [_manager showAdWithID:call.arguments[@"adId"]];
+    if (adShown) {
+      result(nil);
+    } else {
+      result([FlutterError
+          errorWithCode:@"AdShowError"
+                message:@"Ad failed to show."
+                details:nil]);
+    }
   } else if ([call.method
                  isEqualToString:@"AdSize#getAnchoredAdaptiveBannerAdSize"]) {
     FLTAnchoredAdaptiveBannerSize *size = [[FLTAnchoredAdaptiveBannerSize alloc]
