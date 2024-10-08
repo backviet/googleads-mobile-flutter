@@ -61,10 +61,14 @@ final class GoogleMobileAdsViewFactory extends PlatformViewFactory {
     }
     final Integer adId = (Integer) args;
     FlutterAd ad = manager.adForId(adId);
-    if (ad == null || ad.getPlatformView() == null) {
+    if (ad == null) {
       return getErrorView(context, adId);
     }
-    return ad.getPlatformView();
+    final PlatformView platformView = ad.getPlatformView();
+    if (platformView == null) {
+      return getErrorView(context, adId);
+    }
+    return platformView;
   }
 
   /**
