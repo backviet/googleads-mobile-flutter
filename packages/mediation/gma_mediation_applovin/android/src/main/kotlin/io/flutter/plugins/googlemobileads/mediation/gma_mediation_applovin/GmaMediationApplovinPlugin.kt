@@ -39,7 +39,9 @@ class GmaMediationApplovinPlugin: FlutterPlugin, ActivityAware, AppLovinSDKApi {
   }
 
   override fun setIsAgeRestrictedUser(isAgeRestrictedUser: Boolean){
-    AppLovinPrivacySettings.setIsAgeRestrictedUser(isAgeRestrictedUser, context)
+    // https://developers.google.com/admob/android/mediation/applovin#declare_child_users
+    // If you are using AppLovin adapter version 12.6.1.0 or earlier, you need enable it 
+    // AppLovinPrivacySettings.setIsAgeRestrictedUser(isAgeRestrictedUser, context)
   }
 
   override fun setDoNotSell(doNotSell: Boolean) {
