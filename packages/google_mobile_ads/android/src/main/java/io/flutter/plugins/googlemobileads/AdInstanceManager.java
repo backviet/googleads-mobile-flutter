@@ -85,11 +85,10 @@ class AdInstanceManager {
     if (!ads.containsKey(adId)) {
       return;
     }
-    FlutterAd ad = ads.get(adId);
+    FlutterAd ad = ads.remove(adId);
     if (ad != null) {
       ad.dispose();
     }
-    ads.remove(adId);
   }
 
   void disposeAllAds() {
