@@ -10,7 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_mobile_ads: ^8.0.0
+  google_mobile_ads:
+    # path: ../../google_mobile_ads
+    git:
+      url: https://github.com/backviet/googleads-mobile-flutter.git
+      path: packages/google_mobile_ads
+      ref: bd37abef8378bfcdde0b51c296a084aae73ab38b
   meta: ^1.17.0
   plugin_platform_interface: ^2.1.8
 
